@@ -116,7 +116,7 @@ func fetchfile(remfilename string, bucket string) ([]byte,[]byte,[]byte) {
 func main() {
 	bucket,localfilename,remfilename,context := "","","",""
 	if len(os.Args) < 4 {
-		fmt.Println("Usage: s3decrypt {localremfilename} {remoteremfilename} {bucket} {context}\nError: Missing parameters")
+		fmt.Println("Usage: s3decrypt {localfilename} {remotefilename} {bucket} {context}\nError: Missing parameters")
 		os.Exit(1)
 	} else {
 		localfilename = os.Args[1]
