@@ -1,7 +1,7 @@
 package main
 
 import (
-	"./encryption"
+	"go-kms-s3/encryption"
 	"encoding/base64"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
@@ -11,6 +11,8 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"io/ioutil"
 	"os"
+	"github.com/urfave/cli"
+	"time"
 )
 
 func fetchkey(remfilename string, bucket string, context string) []byte {
@@ -99,17 +101,17 @@ func fetchfile(remfilename string, bucket string) ([]byte, []byte, []byte) {
 	return data, iv, s3key
 }
 
-func main() {
-	bucket, localfilename, remfilename, context := "", "", "", ""
-	if len(os.Args) < 4 {
-		fmt.Println("Usage: s3decrypt {localfilename} {remotefilename} {bucket} {context}\nError: Missing parameters")
-		os.Exit(1)
-	} else {
-		localfilename = os.Args[1]
-		remfilename = os.Args[2]
-		bucket = os.Args[3]
-		context = os.Args[4]
-	}
+func decrypt( bucket string, localfilename string, remfilename string, context string) {
+	//bucket, localfilename, remfilename, context := "", "", "", ""
+	//if len(os.Args) < 4 {
+	//	fmt.Println("Usage: s3decrypt {localfilename} {remotefilename} {bucket} {context}\nError: Missing parameters")
+	//	os.Exit(1)
+	//} else {
+	//	localfilename = os.Args[1]
+	//	remfilename = os.Args[2]
+	//	bucket = os.Args[3]
+	//	context = os.Args[4]
+	//}
 	key := fetchkey(remfilename+".key", bucket, context)
 	file, iv, s3key := fetchfile(remfilename, bucket)
 	s3finalkey := encryption.ECB_decrypt(s3key, key)
@@ -120,3 +122,30 @@ func main() {
 		os.Exit(1)
 	}
 }
+
+
+func main() {
+	app := cli.NewApp()
+	app.Name = "s3encrypt"
+	app.Version = "0.8"
+	app.Compiled = time.Now()
+	app.Authors = []cli.Author{
+		cli.Author{
+		Name: "Don Mills",
+		Email: "don.mills@gmail.com",
+		},
+	}
+	app.Commands = []cli.Command{
+	{
+	   Name: "decrypt",
+	   Aliases: []string{"d"},
+	   Usage: "Fetch and decrypt a file from S3",
+	   Action: func(c *cli.Context) error {
+		decrypt(c.Args().Get(0),c.Args().Get(1),c.Args().Get(2),c.Args().Get(3))
+		return nil
+		},
+	},
+	}
+	app.Run(os.Args)
+}
+
