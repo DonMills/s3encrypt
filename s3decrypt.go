@@ -142,7 +142,7 @@ func main() {
 	   Name: "decrypt",
 	   Aliases: []string{"d"},
 	   Usage: "Fetch and decrypt a file from S3",
-           ArgsUsage:  "[localflename] [remotefilename] [bucket] [context]",
+           ArgsUsage:  "[localfilename] [remotefilename] [bucket] [context]",
 	   Action: func(c *cli.Context) error {
 		decrypt(c.Args().Get(0),c.Args().Get(1),c.Args().Get(2),c.Args().Get(3))
 		return nil
