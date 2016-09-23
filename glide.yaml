@@ -11,3 +11,5 @@ import:
   - aws/session
   - service/kms
   - service/s3
+- package: github.com/urfave/cli
+  version: ^1.18.1
