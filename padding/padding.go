@@ -23,3 +23,11 @@ func Unpad(in []byte) []byte {
 	}
 	return in[:len(in)-int(padding)]
 }
+
+func Pad(in []byte) []byte {
+	padding := 16 - (len(in) % 16)
+	for i := 0; i < padding; i++ {
+		in = append(in, byte(padding))
+	}
+	return in
+}
