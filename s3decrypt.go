@@ -1,7 +1,6 @@
 package main
 
 import (
-	"go-kms-s3/encryption"
 	"encoding/base64"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
@@ -9,9 +8,10 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/urfave/cli"
+	"go-kms-s3/encryption"
 	"io/ioutil"
 	"os"
-	"github.com/urfave/cli"
 	"time"
 )
 
@@ -101,7 +101,7 @@ func fetchfile(remfilename string, bucket string) ([]byte, []byte, []byte) {
 	return data, iv, s3key
 }
 
-func decrypt( localfilename string, remfilename string, bucket string, context string) {
+func decrypt(localfilename string, remfilename string, bucket string, context string) {
 	//bucket, localfilename, remfilename, context := "", "", "", ""
 	//if len(os.Args) < 4 {
 	//	fmt.Println("Usage: s3decrypt {localfilename} {remotefilename} {bucket} {context}\nError: Missing parameters")
@@ -123,32 +123,32 @@ func decrypt( localfilename string, remfilename string, bucket string, context s
 	}
 }
 
-
 func main() {
 	app := cli.NewApp()
 	app.Name = "s3encrypt"
+	app.Usage = "Send and receive encrypted files in S3"
 	app.HelpName = "s3encrypt"
-	app.UsageText = "s3encrypt - send and receive encrypted files on S3 using KMS keys"
+	app.UsageText = "s3encrypt [command] {command specific options}"
+	app.ArgsUsage = "s3encrypt [command]"
 	app.Version = "0.8"
 	app.Compiled = time.Now()
 	app.Authors = []cli.Author{
 		cli.Author{
-		Name: "Don Mills",
-		Email: "don.mills@gmail.com",
+			Name:  "Don Mills",
+			Email: "don.mills@gmail.com",
 		},
 	}
 	app.Commands = []cli.Command{
-	{
-	   Name: "decrypt",
-	   Aliases: []string{"d"},
-	   Usage: "Fetch and decrypt a file from S3",
-           ArgsUsage:  "[localfilename] [remotefilename] [bucket] [context]",
-	   Action: func(c *cli.Context) error {
-		decrypt(c.Args().Get(0),c.Args().Get(1),c.Args().Get(2),c.Args().Get(3))
-		return nil
+		{
+			Name:      "decrypt",
+			Aliases:   []string{"d"},
+			Usage:     "Fetch and decrypt a file from S3",
+			ArgsUsage: "[localfilename] [remotefilename] [bucket] [context]",
+			Action: func(c *cli.Context) error {
+				decrypt(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3))
+				return nil
+			},
 		},
-	},
 	}
 	app.Run(os.Args)
 }
-
