@@ -3,8 +3,8 @@ package encryption
 import (
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/rand"
 	"go-kms-s3/padding"
-	"rand"
 )
 
 var BlockSize = aes.BlockSize
@@ -40,14 +40,13 @@ func Decryptfile(data []byte, iv []byte, key []byte) []byte {
 	return padding.Unpad(data)
 }
 
-func Encryptfile(data []byte, key []byte) []byte {
-	block, _ := aes.NewCipher(key)
+func Encryptfile(data []byte, key []byte) ([]byte, []byte) {
 	iv := make([]byte, aes.BlockSize)
 	_, err := rand.Read(iv)
 	if err != nil {
 		panic("There was an IV generation error")
 	}
-	pmessage = padding.Pad(data)
+	pmessage := padding.Pad(data)
 	ciphertext := make([]byte, len(pmessage))
 	c, _ := aes.NewCipher(key)
 	mode := cipher.NewCBCEncrypter(c, iv)
