@@ -33,6 +33,26 @@ func ECB_decrypt(ciphertext []byte, key []byte) []byte {
 	return finalplaintext_unpad
 }
 
+func ECB_encrypt(plaintext []byte, key []byte) []byte {
+	cipher, _ := aes.NewCipher(key)
+	bs := aes.BlockSize
+	i := 0
+	paddedPlain := padding.Pad(plaintext)
+	ciphertext := make([]byte, len(paddedPlain))
+	finalciphertext := make([]byte, len(paddedPlain))
+	for len(paddedPlain) > 0 {
+		cipher.Encrypt(ciphertext, paddedPlain)
+		paddedPlain = paddedPlain[bs:]
+		encryptedBlock := ciphertext[:bs]
+		for index, element := range encryptedBlock {
+			finalciphertext[(i*bs)+index] = element
+		}
+		i++
+		ciphertext = ciphertext[bs:]
+	}
+	return finalciphertext
+}
+
 func Decryptfile(data []byte, iv []byte, key []byte) []byte {
 	block, _ := aes.NewCipher(key)
 	mode := cipher.NewCBCDecrypter(block, iv)
