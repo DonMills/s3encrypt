@@ -102,16 +102,6 @@ func fetchfile(remfilename string, bucket string) ([]byte, []byte, []byte) {
 }
 
 func decrypt(localfilename string, remfilename string, bucket string, context string) {
-	//bucket, localfilename, remfilename, context := "", "", "", ""
-	//if len(os.Args) < 4 {
-	//	fmt.Println("Usage: s3decrypt {localfilename} {remotefilename} {bucket} {context}\nError: Missing parameters")
-	//	os.Exit(1)
-	//} else {
-	//	localfilename = os.Args[1]
-	//	remfilename = os.Args[2]
-	//	bucket = os.Args[3]
-	//	context = os.Args[4]
-	//}
 	key := fetchkey(remfilename+".key", bucket, context)
 	file, iv, s3key := fetchfile(remfilename, bucket)
 	s3finalkey := encryption.ECB_decrypt(s3key, key)
