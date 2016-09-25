@@ -5,5 +5,5 @@ import (
 )
 
 func TestKMSGenerateDecrypt(t *testing.T) {
-	GenerateKey("", "testkey")
+	GenerateEnvKey("", "testkey")
 }

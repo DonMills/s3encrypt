@@ -14,8 +14,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
-//GenerateKey This function is used to generate KMS encryption keys
-func GenerateKey(cmkID string, context string) ([]byte, []byte) {
+//GenerateEnvKey This function is used to generate KMS encryption keys for
+//envelope encryption
+func GenerateEnvKey(cmkID string, context string) ([]byte, []byte) {
 	keygensvc := kms.New(session.New())
 	genparams := &kms.GenerateDataKeyInput{
 		KeyId: aws.String(cmkID),
