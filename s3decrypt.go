@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/urfave/cli"
-	"go-kms-s3/awsfuncs"
-	"go-kms-s3/encryption"
+	"DonMills/go-kms-s3/awsfuncs"
+	"DonMills/go-kms-s3/encryption"
 	"io/ioutil"
 	"os"
 	"time"
@@ -13,7 +13,7 @@ import (
 func decrypt(localfilename string, remfilename string, bucket string, context string) {
 	key := awsfuncs.FetchKey(remfilename+".key", bucket, context)
 	file, iv, s3key := awsfuncs.FetchFile(remfilename, bucket)
-	s3finalkey := encryption.ECB_decrypt(s3key, key)
+	s3finalkey := encryption.ECBDecrypt(s3key, key)
 	result := encryption.Decryptfile(file, iv, s3finalkey)
 	err := ioutil.WriteFile(localfilename, result, 0644)
 	if err != nil {

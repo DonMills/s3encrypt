@@ -1,3 +1,4 @@
+// Package awsfuncs contains all the code that deals directly with AWS services
 package awsfuncs
 
 import (
