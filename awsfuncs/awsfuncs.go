@@ -1,18 +1,46 @@
 package awsfuncs
 
 import (
+	"DonMills/go-kms-s3/encryption"
 	"encoding/base64"
 	"fmt"
+	"io/ioutil"
+	"os"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"go-kms-s3/encryption"
-	"io/ioutil"
-	"os"
 )
 
+//GenerateKey This function is used to generate KMS encryption keys
+func GenerateKey(cmkID string, context string) ([]byte, []byte) {
+	keygensvc := kms.New(session.New())
+	genparams := &kms.GenerateDataKeyInput{
+		KeyId: aws.String(cmkID),
+		EncryptionContext: map[string]*string{
+			"Application": aws.String(context),
+		},
+	}
+	resp, err := keygensvc.GenerateDataKey(genparams)
+	if err != nil {
+		if awsErr, ok := err.(awserr.Error); ok {
+			fmt.Println(awsErr.Code(), awsErr.Message(), awsErr.OrigErr())
+			if reqErr, ok := err.(awserr.RequestFailure); ok {
+				fmt.Println(reqErr.Code(), reqErr.Message(), reqErr.StatusCode(), reqErr.RequestID())
+				os.Exit(1)
+			}
+		} else {
+			fmt.Println(err.Error())
+		}
+	}
+	fmt.Println(resp)
+	return nil, nil
+}
+
+//FetchKey This function is used to fetch a saved encrypted key from S3 and
+//decrypt it with KMS
 func FetchKey(remfilename string, bucket string, context string) []byte {
 	svc := s3.New(session.New())
 	params := &s3.GetObjectInput{
@@ -38,7 +66,12 @@ func FetchKey(remfilename string, bucket string, context string) []byte {
 	}
 	decode := base64.NewDecoder(base64.StdEncoding, file.Body)
 	output, _ := ioutil.ReadAll(decode)
+	decryptedkey := decryptkey(output, context)
+	return decryptedkey
+}
 
+//decryptkey does the actual KMS decryption of the stored key
+func decryptkey(output []byte, context string) []byte {
 	service := kms.New(session.New())
 
 	keyparams := &kms.DecryptInput{
@@ -67,6 +100,8 @@ func FetchKey(remfilename string, bucket string, context string) []byte {
 	return plainkey.Plaintext
 }
 
+//FetchFile This function is used to fetch the decrypted file from S3 and grab
+//all pertinent metatdata (IV, key)
 func FetchFile(remfilename string, bucket string) ([]byte, []byte, []byte) {
 	svc := s3.New(session.New())
 	params := &s3.GetObjectInput{
