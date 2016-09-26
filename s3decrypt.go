@@ -14,7 +14,7 @@ func decrypt(localfilename string, remfilename string, bucket string, context st
 	key := awsfuncs.FetchKey(remfilename+".key", bucket, context)
 	file, iv, s3key := awsfuncs.FetchFile(remfilename, bucket)
 	s3finalkey := encryption.ECBDecrypt(s3key, key)
-	result := encryption.Decryptfile(file, iv, s3finalkey)
+	result := encryption.DecryptFile(file, iv, s3finalkey)
 	err := ioutil.WriteFile(localfilename, result, 0644)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -44,7 +44,12 @@ func main() {
 			Usage:     "Fetch and decrypt a file from S3",
 			ArgsUsage: "[localfilename] [remotefilename] [bucket] [context]",
 			Action: func(c *cli.Context) error {
+				if len(c.Args()) < 4 {
+					fmt.Println("Usage: s3decrypt decrypt [localfilename] [remotefilename] [bucket] [context]") 	
+					os.Exit(1)
+				} else {
 				decrypt(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3))
+				}
 				return nil
 			},
 		},

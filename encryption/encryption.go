@@ -2,10 +2,12 @@
 package encryption
 
 import (
+	"DonMills/go-kms-s3/errorhandle"
 	"DonMills/go-kms-s3/padding"
 	"crypto/aes"
 	"crypto/cipher"
 	"crypto/rand"
+	"errors"
 )
 
 // BlockSize Export this value (which is always 16 lol) to other packages so they don't need
@@ -15,12 +17,14 @@ var BlockSize = aes.BlockSize
 // ECBDecrypt This function does the ECB decryption of the stored data encryption key
 // with the KMS generated envelope key
 func ECBDecrypt(ciphertext []byte, key []byte) []byte {
-	cipher, _ := aes.NewCipher(key)
+	cipher, err := aes.NewCipher(key)
+	if err != nil {
+		errorhandle.ErrorHandle(errors.New("ECBEncrypt - There was a cipher initialization error"))
+	}
 	bs := aes.BlockSize
 	if len(ciphertext)%bs != 0 {
-		panic("Need a multiple of the blocksize")
+		errorhandle.ErrorHandle(errors.New("ECBDecrypt - ciphertext is not multiple of blocksize"))
 	}
-
 	i := 0
 	plaintext := make([]byte, len(ciphertext))
 	finalplaintext := make([]byte, len(ciphertext))
@@ -41,7 +45,10 @@ func ECBDecrypt(ciphertext []byte, key []byte) []byte {
 // ECBEncrypt This function encrypts the data encryption key with the
 // KMS generated envelope key
 func ECBEncrypt(plaintext []byte, key []byte) []byte {
-	cipher, _ := aes.NewCipher(key)
+	cipher, err := aes.NewCipher(key)
+	if err != nil {
+		errorhandle.ErrorHandle(errors.New("ECBEncrypt - There was a cipher initialization error"))
+	}
 	bs := aes.BlockSize
 	i := 0
 	paddedPlain := padding.Pad(plaintext)
@@ -60,26 +67,32 @@ func ECBEncrypt(plaintext []byte, key []byte) []byte {
 	return finalciphertext
 }
 
-// Decryptfile This function uses the decrypted data encryption key and the
+// DecryptFile This function uses the decrypted data encryption key and the
 // retrived IV from the S3 metadata to decrypt the data file
-func Decryptfile(data []byte, iv []byte, key []byte) []byte {
-	block, _ := aes.NewCipher(key)
+func DecryptFile(data []byte, iv []byte, key []byte) []byte {
+	block, err := aes.NewCipher(key)
+	if err != nil {
+		errorhandle.ErrorHandle(errors.New("DecryptFile - There was a cipher initialization error"))
+	}
 	mode := cipher.NewCBCDecrypter(block, iv)
 	mode.CryptBlocks(data, data)
 	return padding.Unpad(data)
 }
 
-// Encryptfile This function uses the provided data encryption key and generates
+// EncryptFile This function uses the provided data encryption key and generates
 // an IV to encrypt the data file
-func Encryptfile(data []byte, key []byte) ([]byte, []byte) {
+func EncryptFile(data []byte, key []byte) ([]byte, []byte) {
 	iv := make([]byte, aes.BlockSize)
 	_, err := rand.Read(iv)
 	if err != nil {
-		panic("There was an IV generation error")
+		errorhandle.ErrorHandle(errors.New("Encryptfile - There was an IV generation error"))
 	}
 	pmessage := padding.Pad(data)
 	ciphertext := make([]byte, len(pmessage))
-	c, _ := aes.NewCipher(key)
+	c, kerr := aes.NewCipher(key)
+	if kerr != nil {
+		errorhandle.ErrorHandle(errors.New("EncryptFile - There was a cipher initialization error"))
+	}
 	mode := cipher.NewCBCEncrypter(c, iv)
 	mode.CryptBlocks(ciphertext, pmessage)
 	return ciphertext, iv
@@ -88,6 +101,9 @@ func Encryptfile(data []byte, key []byte) ([]byte, []byte) {
 // generatedatakey Does what's on the tin, generates the data encryption key
 func generatedatakey() []byte {
 	key := make([]byte, 16)
-	rand.Read(key)
+	_, err := rand.Read(key)
+	if err != nil {
+		errorhandle.ErrorHandle(errors.New("GenerateDataKey - There was a key generation error"))
+	}
 	return key
 }

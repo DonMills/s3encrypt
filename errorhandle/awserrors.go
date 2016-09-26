@@ -2,8 +2,8 @@ package errorhandle
 
 import (
 	"fmt"
-	"os"
 	"github.com/aws/aws-sdk-go/aws/awserr"
+	"os"
 )
 
 //AWSErrorHandle takes an AWS generated error and handles it
@@ -11,10 +11,10 @@ func AWSErrorHandle(err error) {
 	if awsErr, ok := err.(awserr.Error); ok {
 		// Generic AWS error with Code, Message, and original error (if any)
 		if origErr := awsErr.OrigErr(); origErr != nil {
-		fmt.Printf("AWS Error: %s - %s %v\n",awsErr.Code(), awsErr.Message(), awsErr.OrigErr())
-		os.Exit(1)
+			fmt.Printf("AWS Error: %s - %s %v\n", awsErr.Code(), awsErr.Message(), awsErr.OrigErr())
+			os.Exit(1)
 		} else {
-		fmt.Printf("AWS Error: %s - %s \n",awsErr.Code(), awsErr.Message())
+			fmt.Printf("AWS Error: %s - %s \n", awsErr.Code(), awsErr.Message())
 		}
 		os.Exit(1)
 		if reqErr, ok := err.(awserr.RequestFailure); ok {
