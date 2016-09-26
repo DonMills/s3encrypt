@@ -3,15 +3,14 @@ package awsfuncs
 
 import (
 	"DonMills/go-kms-s3/encryption"
+	"DonMills/go-kms-s3/errorhandle"
 	"encoding/base64"
 	"fmt"
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"io/ioutil"
-	"os"
 )
 
 //GenerateEnvKey This function is used to generate KMS encryption keys for
@@ -27,15 +26,7 @@ func GenerateEnvKey(cmkID string, context string) ([]byte, []byte) {
 	}
 	resp, err := keygensvc.GenerateDataKey(genparams)
 	if err != nil {
-		if awsErr, ok := err.(awserr.Error); ok {
-			fmt.Println(awsErr.Code(), awsErr.Message(), awsErr.OrigErr())
-			if reqErr, ok := err.(awserr.RequestFailure); ok {
-				fmt.Println(reqErr.Code(), reqErr.Message(), reqErr.StatusCode(), reqErr.RequestID())
-				os.Exit(1)
-			}
-		} else {
-			fmt.Println(err.Error())
-		}
+		 errorhandle.AWSErrorHandle(err)
 	}
 	plainkey := resp.Plaintext
 	cipherkey := resp.CiphertextBlob
@@ -53,19 +44,7 @@ func FetchKey(remfilename string, bucket string, context string) []byte {
 	file, err := svc.GetObject(params)
 
 	if err != nil {
-		if awsErr, ok := err.(awserr.Error); ok {
-			// Generic AWS error with Code, Message, and original error (if any)
-			fmt.Println(awsErr.Code(), awsErr.Message(), awsErr.OrigErr())
-			if reqErr, ok := err.(awserr.RequestFailure); ok {
-				// A service error occurred
-				fmt.Println(reqErr.Code(), reqErr.Message(), reqErr.StatusCode(), reqErr.RequestID())
-				os.Exit(1)
-			}
-		} else {
-			// This case should never be hit, the SDK should always return an
-			// error which satisfies the awserr.Error interface.
-			fmt.Println(err.Error())
-		}
+		errorhandle.AWSErrorHandle(err)
 	}
 	decode := base64.NewDecoder(base64.StdEncoding, file.Body)
 	output, _ := ioutil.ReadAll(decode)
@@ -86,16 +65,7 @@ func decryptkey(output []byte, context string) []byte {
 
 	plainkey, err := service.Decrypt(keyparams)
 	if err != nil {
-		if awsErr, ok := err.(awserr.Error); ok {
-			fmt.Println(awsErr.Code(), awsErr.Message(), awsErr.OrigErr())
-			if reqErr, ok := err.(awserr.RequestFailure); ok {
-				fmt.Println(reqErr.Code(), reqErr.Message(), reqErr.StatusCode(), reqErr.RequestID())
-				os.Exit(1)
-			}
-		} else {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
+		 errorhandle.AWSErrorHandle(err)
 	}
 	decodelen := base64.StdEncoding.DecodedLen(len(plainkey.Plaintext))
 	decodedplainkey := make([]byte, decodelen)
@@ -114,16 +84,7 @@ func FetchFile(remfilename string, bucket string) ([]byte, []byte, []byte) {
 	file, err := svc.GetObject(params)
 
 	if err != nil {
-		if awsErr, ok := err.(awserr.Error); ok {
-			fmt.Println(awsErr.Code(), awsErr.Message(), awsErr.OrigErr())
-			if reqErr, ok := err.(awserr.RequestFailure); ok {
-				fmt.Println(reqErr.Code(), reqErr.Message(), reqErr.StatusCode(), reqErr.RequestID())
-				os.Exit(1)
-			}
-		} else {
-			fmt.Println(err.Error())
-			os.Exit(1)
-		}
+		 errorhandle.AWSErrorHandle(err)
 	}
 
 	data, _ := ioutil.ReadAll(file.Body)
