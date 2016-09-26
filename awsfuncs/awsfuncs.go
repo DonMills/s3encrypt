@@ -5,14 +5,13 @@ import (
 	"DonMills/go-kms-s3/encryption"
 	"encoding/base64"
 	"fmt"
-	"io/ioutil"
-	"os"
-
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"io/ioutil"
+	"os"
 )
 
 //GenerateEnvKey This function is used to generate KMS encryption keys for
@@ -24,6 +23,7 @@ func GenerateEnvKey(cmkID string, context string) ([]byte, []byte) {
 		EncryptionContext: map[string]*string{
 			"Application": aws.String(context),
 		},
+		KeySpec: aws.String("AES_256"),
 	}
 	resp, err := keygensvc.GenerateDataKey(genparams)
 	if err != nil {
@@ -37,8 +37,9 @@ func GenerateEnvKey(cmkID string, context string) ([]byte, []byte) {
 			fmt.Println(err.Error())
 		}
 	}
-	fmt.Println(resp)
-	return nil, nil
+	plainkey := resp.Plaintext
+	cipherkey := resp.CiphertextBlob
+	return cipherkey, plainkey
 }
 
 //FetchKey This function is used to fetch a saved encrypted key from S3 and
