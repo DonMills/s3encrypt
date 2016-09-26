@@ -45,10 +45,10 @@ func main() {
 			ArgsUsage: "[localfilename] [remotefilename] [bucket] [context]",
 			Action: func(c *cli.Context) error {
 				if len(c.Args()) < 4 {
-					fmt.Println("Usage: s3decrypt decrypt [localfilename] [remotefilename] [bucket] [context]") 	
+					fmt.Println("Usage: s3decrypt decrypt [localfilename] [remotefilename] [bucket] [context]")
 					os.Exit(1)
 				} else {
-				decrypt(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3))
+					decrypt(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3))
 				}
 				return nil
 			},

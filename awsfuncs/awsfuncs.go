@@ -26,7 +26,7 @@ func GenerateEnvKey(cmkID string, context string) ([]byte, []byte) {
 	}
 	resp, err := keygensvc.GenerateDataKey(genparams)
 	if err != nil {
-		 errorhandle.AWSErrorHandle(err)
+		errorhandle.AWSErrorHandle(err)
 	}
 	plainkey := resp.Plaintext
 	cipherkey := resp.CiphertextBlob
@@ -65,7 +65,7 @@ func decryptkey(output []byte, context string) []byte {
 
 	plainkey, err := service.Decrypt(keyparams)
 	if err != nil {
-		 errorhandle.AWSErrorHandle(err)
+		errorhandle.AWSErrorHandle(err)
 	}
 	decodelen := base64.StdEncoding.DecodedLen(len(plainkey.Plaintext))
 	decodedplainkey := make([]byte, decodelen)
@@ -84,7 +84,7 @@ func FetchFile(remfilename string, bucket string) ([]byte, []byte, []byte) {
 	file, err := svc.GetObject(params)
 
 	if err != nil {
-		 errorhandle.AWSErrorHandle(err)
+		errorhandle.AWSErrorHandle(err)
 	}
 
 	data, _ := ioutil.ReadAll(file.Body)
