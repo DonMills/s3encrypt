@@ -83,18 +83,23 @@ func decryptkey(output []byte, context string) []byte {
 //putenckey places the encrypted key in AWS S3.
 func putenckey(key []byte, remfilename string, bucket string, sse string) {
 	var params *s3.PutObjectInput
+
+	encodelen := base64.StdEncoding.EncodedLen(len(key))
+	enckey := make([]byte, encodelen)
+	base64.StdEncoding.Encode(enckey, key)
+
 	if sse != "nil" {
 		params = &s3.PutObjectInput{
 			Bucket:               aws.String(bucket),               // Required
 			Key:                  aws.String(remfilename + ".key"), // Required
-			Body:                 bytes.NewReader(key),
+			Body:                 bytes.NewReader(enckey),
 			ServerSideEncryption: aws.String(sse),
 		}
 	} else {
 		params = &s3.PutObjectInput{
 			Bucket: aws.String(bucket),               // Required
 			Key:    aws.String(remfilename + ".key"), // Required
-			Body:   bytes.NewReader(key),
+			Body:   bytes.NewReader(enckey),
 		}
 	}
 	_, err := s3svc.PutObject(params)
