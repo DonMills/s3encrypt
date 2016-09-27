@@ -2,8 +2,9 @@ package errorhandle
 
 import (
 	"fmt"
-	"github.com/aws/aws-sdk-go/aws/awserr"
 	"os"
+
+	"github.com/aws/aws-sdk-go/aws/awserr"
 )
 
 //AWSErrorHandle takes an AWS generated error and handles it

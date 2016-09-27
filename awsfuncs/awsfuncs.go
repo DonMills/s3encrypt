@@ -4,13 +4,15 @@ package awsfuncs
 import (
 	"DonMills/go-kms-s3/encryption"
 	"DonMills/go-kms-s3/errorhandle"
+
 	"encoding/base64"
 	"fmt"
+	"io/ioutil"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/kms"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"io/ioutil"
 )
 
 //GenerateEnvKey This function is used to generate KMS encryption keys for

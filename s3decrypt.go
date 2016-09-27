@@ -3,11 +3,13 @@ package main
 import (
 	"DonMills/go-kms-s3/awsfuncs"
 	"DonMills/go-kms-s3/encryption"
+
 	"fmt"
-	"github.com/urfave/cli"
 	"io/ioutil"
 	"os"
 	"time"
+
+	"github.com/urfave/cli"
 )
 
 func decrypt(localfilename string, remfilename string, bucket string, context string) {
