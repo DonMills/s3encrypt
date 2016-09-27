@@ -7,7 +7,7 @@ import (
 )
 
 //AWSErrorHandle takes an AWS generated error and handles it
-func AWSErrorHandle(err error) {
+func AWSError(err error) {
 	if awsErr, ok := err.(awserr.Error); ok {
 		// Generic AWS error with Code, Message, and original error (if any)
 		if origErr := awsErr.OrigErr(); origErr != nil {

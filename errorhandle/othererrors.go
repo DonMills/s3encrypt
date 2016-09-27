@@ -6,7 +6,7 @@ import (
 )
 
 //ErrorHandle takes other generated errors and handles them
-func ErrorHandle(err error) {
+func GenError(err error) {
 	fmt.Printf("Error: %s", err.Error())
 	os.Exit(1)
 	return

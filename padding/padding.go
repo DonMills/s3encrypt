@@ -10,19 +10,19 @@ import (
 //Unpad This function unpads pkcs#7 padding
 func Unpad(in []byte) []byte {
 	if len(in) == 0 {
-		errorhandle.ErrorHandle(errors.New("Unpad - No data sent to unpad"))
+		errorhandle.GenError(errors.New("Unpad - No data sent to unpad"))
 	}
 
 	padding := in[len(in)-1]
 	if int(padding) > len(in) || padding > aes.BlockSize {
-		errorhandle.ErrorHandle(errors.New("Unpad - Padding larger than BlockSize or data"))
+		errorhandle.GenError(errors.New("Unpad - Padding larger than BlockSize or data"))
 	} else if padding == 0 {
-		errorhandle.ErrorHandle(errors.New("Unpad - Does not contain proper padding"))
+		errorhandle.GenError(errors.New("Unpad - Does not contain proper padding"))
 	}
 
 	for i := len(in) - 1; i > len(in)-int(padding)-1; i-- {
 		if in[i] != padding {
-			errorhandle.ErrorHandle(errors.New("Unpad - Padded value larger than padding"))
+			errorhandle.GenError(errors.New("Unpad - Padded value larger than padding"))
 		}
 	}
 	return in[:len(in)-int(padding)]

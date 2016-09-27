@@ -19,11 +19,11 @@ var BlockSize = aes.BlockSize
 func ECBDecrypt(ciphertext []byte, key []byte) []byte {
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
-		errorhandle.ErrorHandle(errors.New("ECBEncrypt - There was a cipher initialization error"))
+		errorhandle.GenError(errors.New("ECBEncrypt - There was a cipher initialization error"))
 	}
 	bs := aes.BlockSize
 	if len(ciphertext)%bs != 0 {
-		errorhandle.ErrorHandle(errors.New("ECBDecrypt - ciphertext is not multiple of blocksize"))
+		errorhandle.GenError(errors.New("ECBDecrypt - ciphertext is not multiple of blocksize"))
 	}
 	i := 0
 	plaintext := make([]byte, len(ciphertext))
@@ -47,7 +47,7 @@ func ECBDecrypt(ciphertext []byte, key []byte) []byte {
 func ECBEncrypt(plaintext []byte, key []byte) []byte {
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
-		errorhandle.ErrorHandle(errors.New("ECBEncrypt - There was a cipher initialization error"))
+		errorhandle.GenError(errors.New("ECBEncrypt - There was a cipher initialization error"))
 	}
 	bs := aes.BlockSize
 	i := 0
@@ -72,7 +72,7 @@ func ECBEncrypt(plaintext []byte, key []byte) []byte {
 func DecryptFile(data []byte, iv []byte, key []byte) []byte {
 	block, err := aes.NewCipher(key)
 	if err != nil {
-		errorhandle.ErrorHandle(errors.New("DecryptFile - There was a cipher initialization error"))
+		errorhandle.GenError(errors.New("DecryptFile - There was a cipher initialization error"))
 	}
 	mode := cipher.NewCBCDecrypter(block, iv)
 	mode.CryptBlocks(data, data)
@@ -85,13 +85,13 @@ func EncryptFile(data []byte, key []byte) ([]byte, []byte) {
 	iv := make([]byte, aes.BlockSize)
 	_, err := rand.Read(iv)
 	if err != nil {
-		errorhandle.ErrorHandle(errors.New("Encryptfile - There was an IV generation error"))
+		errorhandle.GenError(errors.New("Encryptfile - There was an IV generation error"))
 	}
 	pmessage := padding.Pad(data)
 	ciphertext := make([]byte, len(pmessage))
 	c, kerr := aes.NewCipher(key)
 	if kerr != nil {
-		errorhandle.ErrorHandle(errors.New("EncryptFile - There was a cipher initialization error"))
+		errorhandle.GenError(errors.New("EncryptFile - There was a cipher initialization error"))
 	}
 	mode := cipher.NewCBCEncrypter(c, iv)
 	mode.CryptBlocks(ciphertext, pmessage)
@@ -103,7 +103,7 @@ func generatedatakey() []byte {
 	key := make([]byte, 16)
 	_, err := rand.Read(key)
 	if err != nil {
-		errorhandle.ErrorHandle(errors.New("GenerateDataKey - There was a key generation error"))
+		errorhandle.GenError(errors.New("GenerateDataKey - There was a key generation error"))
 	}
 	return key
 }
