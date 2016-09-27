@@ -15,10 +15,17 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 )
 
+var s3svc *s3.S3
+var kmssvc *kms.KMS
+
+func init() {
+	s3svc = s3.New(session.New())
+	kmssvc = kms.New(session.New())
+}
+
 //GenerateEnvKey This function is used to generate KMS encryption keys for
 //envelope encryption
 func GenerateEnvKey(cmkID string, context string) ([]byte, []byte) {
-	keygensvc := kms.New(session.New())
 	genparams := &kms.GenerateDataKeyInput{
 		KeyId: aws.String(cmkID),
 		EncryptionContext: map[string]*string{
@@ -26,7 +33,7 @@ func GenerateEnvKey(cmkID string, context string) ([]byte, []byte) {
 		},
 		KeySpec: aws.String("AES_256"),
 	}
-	resp, err := keygensvc.GenerateDataKey(genparams)
+	resp, err := kmssvc.GenerateDataKey(genparams)
 	if err != nil {
 		errorhandle.AWSError(err)
 	}
@@ -38,12 +45,11 @@ func GenerateEnvKey(cmkID string, context string) ([]byte, []byte) {
 //FetchKey This function is used to fetch a saved encrypted key from S3 and
 //decrypt it with KMS
 func FetchKey(remfilename string, bucket string, context string) []byte {
-	svc := s3.New(session.New())
 	params := &s3.GetObjectInput{
 		Bucket: aws.String(bucket),      // Required
 		Key:    aws.String(remfilename), // Required
 	}
-	file, err := svc.GetObject(params)
+	file, err := s3svc.GetObject(params)
 
 	if err != nil {
 		errorhandle.AWSError(err)
@@ -56,8 +62,6 @@ func FetchKey(remfilename string, bucket string, context string) []byte {
 
 //decryptkey does the actual KMS decryption of the stored key
 func decryptkey(output []byte, context string) []byte {
-	service := kms.New(session.New())
-
 	keyparams := &kms.DecryptInput{
 		CiphertextBlob: output, // Required
 		EncryptionContext: map[string]*string{
@@ -65,7 +69,7 @@ func decryptkey(output []byte, context string) []byte {
 		},
 	}
 
-	plainkey, err := service.Decrypt(keyparams)
+	plainkey, err := kmssvc.Decrypt(keyparams)
 	if err != nil {
 		errorhandle.AWSError(err)
 	}
@@ -78,12 +82,11 @@ func decryptkey(output []byte, context string) []byte {
 //FetchFile This function is used to fetch the decrypted file from S3 and grab
 //all pertinent metatdata (IV, key)
 func FetchFile(remfilename string, bucket string) ([]byte, []byte, []byte) {
-	svc := s3.New(session.New())
 	params := &s3.GetObjectInput{
 		Bucket: aws.String(bucket),      // Required
 		Key:    aws.String(remfilename), // Required
 	}
-	file, err := svc.GetObject(params)
+	file, err := s3svc.GetObject(params)
 
 	if err != nil {
 		errorhandle.AWSError(err)
