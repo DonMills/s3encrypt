@@ -4,6 +4,7 @@ package awsfuncs
 import (
 	"DonMills/go-kms-s3/encryption"
 	"DonMills/go-kms-s3/errorhandle"
+	"bytes"
 
 	"encoding/base64"
 	"fmt"
@@ -77,6 +78,47 @@ func decryptkey(output []byte, context string) []byte {
 	decodedplainkey := make([]byte, decodelen)
 	base64.StdEncoding.Decode(decodedplainkey, plainkey.Plaintext)
 	return plainkey.Plaintext
+}
+
+//putenckey places the encrypted key in AWS S3.
+func putenckey(key []byte, remfilename string, bucket string, sse string) {
+	var params *s3.PutObjectInput
+	if sse != "nil" {
+		params = &s3.PutObjectInput{
+			Bucket:               aws.String(bucket),               // Required
+			Key:                  aws.String(remfilename + ".key"), // Required
+			Body:                 bytes.NewReader(key),
+			ServerSideEncryption: aws.String(sse),
+		}
+	} else {
+		params = &s3.PutObjectInput{
+			Bucket: aws.String(bucket),               // Required
+			Key:    aws.String(remfilename + ".key"), // Required
+			Body:   bytes.NewReader(key),
+		}
+	}
+	_, err := s3svc.PutObject(params)
+	if err != nil {
+		errorhandle.AWSError(err)
+	}
+}
+
+//PutEncKey puts the encrypted key in AWS S3 with no SSE
+func PutEncKey(key []byte, remfilename string, bucket string) {
+	sse := "nil"
+	putenckey(key, remfilename, bucket, sse)
+}
+
+//PutEncKeyS3SSE puts the encrypted key in AWS S3 with S3 managed SSE
+func PutEncKeyS3SSE(key []byte, remfilename string, bucket string) {
+	sse := "AES_256"
+	putenckey(key, remfilename, bucket, sse)
+}
+
+//PutEncKeyKMSSSE puts the encrypted key in AWS S3 with KMS managed SSE
+func PutEncKeyKMSSSE(key []byte, remfilename string, bucket string) {
+	sse := "aws:kms"
+	putenckey(key, remfilename, bucket, sse)
 }
 
 //FetchFile This function is used to fetch the decrypted file from S3 and grab
