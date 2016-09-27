@@ -27,7 +27,7 @@ func Unpad(in []byte) []byte {
 
 //Pad This function does pkcs#7 padding
 func Pad(in []byte) []byte {
-	padding := 16 - (len(in) % 16)
+	padding := aes.BlockSize - (len(in) % aes.BlockSize)
 	for i := 0; i < padding; i++ {
 		in = append(in, byte(padding))
 	}
