@@ -50,4 +50,19 @@ _or_
 go build -o s3encrypt
 ./s3encrypt 
 ```
-
+## Usage Notes
+The tool has a full help system, but in general usage is 
+```
+ s3encrypt [command] {command specific options}
+```
+where commands are 
+```
+s3encrypt encrypt [localfilename] [remotefilename] [bucket] [context]
+OPTIONS:
+   -c value  The customer master key id - can set with S3ENCRYPT_CMKID environment variable [$S3ENCRYPT_CMKID]
+   -s value  The ServerSideEncryption method to use - default is none, valid options are "AES256" or "aws:kms" (default: "nil")
+```
+or
+```
+s3encrypt decrypt [localfilename] [remotefilename] [bucket] [context]
+```
