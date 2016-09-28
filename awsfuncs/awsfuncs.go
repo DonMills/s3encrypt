@@ -2,8 +2,8 @@
 package awsfuncs
 
 import (
-	"DonMills/go-kms-s3/encryption"
-	"DonMills/go-kms-s3/errorhandle"
+	"DonMills/s3encrypt/encryption"
+	"DonMills/s3encrypt/errorhandle"
 
 	"bytes"
 	"encoding/base64"

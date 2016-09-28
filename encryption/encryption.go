@@ -2,8 +2,8 @@
 package encryption
 
 import (
-	"DonMills/go-kms-s3/errorhandle"
-	"DonMills/go-kms-s3/padding"
+	"DonMills/s3encrypt/errorhandle"
+	"DonMills/s3encrypt/padding"
 
 	"crypto/aes"
 	"crypto/cipher"

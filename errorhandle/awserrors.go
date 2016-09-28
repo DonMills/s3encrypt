@@ -7,7 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 )
 
-//AWSErrorHandle takes an AWS generated error and handles it
+//AWSError takes an AWS generated error and handles it
 func AWSError(err error) {
 	if awsErr, ok := err.(awserr.Error); ok {
 		// Generic AWS error with Code, Message, and original error (if any)

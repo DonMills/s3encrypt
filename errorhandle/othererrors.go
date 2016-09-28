@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-//ErrorHandle takes other generated errors and handles them
+//GenError takes other generated errors and handles them
 func GenError(err error) {
 	fmt.Printf("Error: %s", err.Error())
 	os.Exit(1)

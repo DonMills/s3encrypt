@@ -1,9 +1,9 @@
 package main
 
 import (
-	"DonMills/go-kms-s3/awsfuncs"
-	"DonMills/go-kms-s3/encryption"
-	"DonMills/go-kms-s3/errorhandle"
+	"DonMills/s3encrypt/awsfuncs"
+	"DonMills/s3encrypt/encryption"
+	"DonMills/s3encrypt/errorhandle"
 
 	"fmt"
 	"io/ioutil"
