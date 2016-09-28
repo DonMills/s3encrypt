@@ -4,10 +4,10 @@ package awsfuncs
 import (
 	"DonMills/go-kms-s3/encryption"
 	"DonMills/go-kms-s3/errorhandle"
-	"bytes"
 
+	"bytes"
 	"encoding/base64"
-	"fmt"
+	"errors"
 	"io/ioutil"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -80,8 +80,8 @@ func decryptkey(output []byte, context string) []byte {
 	return plainkey.Plaintext
 }
 
-//putenckey places the encrypted key in AWS S3.
-func putenckey(key []byte, remfilename string, bucket string, sse string) {
+//PutEncKey places the encrypted key in AWS S3.
+func PutEncKey(key []byte, remfilename string, bucket string, sse string) {
 	var params *s3.PutObjectInput
 
 	encodelen := base64.StdEncoding.EncodedLen(len(key))
@@ -108,24 +108,6 @@ func putenckey(key []byte, remfilename string, bucket string, sse string) {
 	}
 }
 
-//PutEncKey puts the encrypted key in AWS S3 with no SSE
-func PutEncKey(key []byte, remfilename string, bucket string) {
-	sse := "nil"
-	putenckey(key, remfilename, bucket, sse)
-}
-
-//PutEncKeyS3SSE puts the encrypted key in AWS S3 with S3 managed SSE
-func PutEncKeyS3SSE(key []byte, remfilename string, bucket string) {
-	sse := "AES_256"
-	putenckey(key, remfilename, bucket, sse)
-}
-
-//PutEncKeyKMSSSE puts the encrypted key in AWS S3 with KMS managed SSE
-func PutEncKeyKMSSSE(key []byte, remfilename string, bucket string) {
-	sse := "aws:kms"
-	putenckey(key, remfilename, bucket, sse)
-}
-
 //FetchFile This function is used to fetch the decrypted file from S3 and grab
 //all pertinent metatdata (IV, key)
 func FetchFile(remfilename string, bucket string) ([]byte, []byte, []byte) {
@@ -145,7 +127,35 @@ func FetchFile(remfilename string, bucket string) ([]byte, []byte, []byte) {
 	iv, _ := base64.StdEncoding.DecodeString(encodeiv)
 	s3key, _ := base64.StdEncoding.DecodeString(s3encodekey)
 	if (len(data) % encryption.BlockSize) != 0 {
-		fmt.Println("There is a size issue!")
+		errorhandle.GenError(errors.New("The file is not an evenly divisible size of AES Blocksize"))
 	}
 	return data, iv, s3key
+}
+
+//PutEncFile encrypts and uploads the file with the proper metadata
+func PutEncFile(filedata []byte, remfilename string, bucket string, sse string) {
+	var params *s3.PutObjectInput
+
+	//	encodelen := base64.StdEncoding.EncodedLen(len(key))
+	//enckey := make([]byte, encodelen)
+	//base64.StdEncoding.Encode(enckey, key)
+
+	if sse != "nil" {
+		params = &s3.PutObjectInput{
+			Bucket:               aws.String(bucket),      // Required
+			Key:                  aws.String(remfilename), // Required
+			Body:                 bytes.NewReader(filedata),
+			ServerSideEncryption: aws.String(sse),
+		}
+	} else {
+		params = &s3.PutObjectInput{
+			Bucket: aws.String(bucket),      // Required
+			Key:    aws.String(remfilename), // Required
+			Body:   bytes.NewReader(filedata),
+		}
+	}
+	_, err := s3svc.PutObject(params)
+	if err != nil {
+		errorhandle.AWSError(err)
+	}
 }
