@@ -85,14 +85,14 @@ func main() {
 				},
 				cli.StringFlag{
 					Name:        "s",
-					Usage:       "The ServerSideEncryption method to use - defaults to none",
+					Usage:       "The ServerSideEncryption method to use - default is none, valid options are \"AES256\" or \"aws:kms\"",
 					Value:       "nil",
 					Destination: &sse,
 				},
 			},
 			Action: func(c *cli.Context) error {
 				if len(c.Args()) < 4 {
-					fmt.Println("Usage: s3decrypt encrypt [localfilename] [remotefilename] [bucket] [context] -c [customermasterkey] -s [AES_256|aws:kms]")
+					fmt.Println("Usage: s3decrypt encrypt [localfilename] [remotefilename] [bucket] [context] -c [customermasterkey] -s [AES256|aws:kms]")
 					os.Exit(1)
 				} else {
 					encrypt(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3), sse, cmkID)
