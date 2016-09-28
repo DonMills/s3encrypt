@@ -1,4 +1,4 @@
-package: github.com/DonMills/go-kms-s3
+package: github.com/DonMills/s3encrypt
 license: MIT
 owners:
 - name: Don Mills
