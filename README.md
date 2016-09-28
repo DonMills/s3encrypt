@@ -1,24 +1,38 @@
 # go-kms-s3
 A tool designed to work with the [ruby-kms-s3-gem](https://github.com/DonMills/ruby-kms-s3-gem).  
-Currently can download files from S3 that are encrypted and uploaded with the gem.
+Fully compatable with the gem - can encrypt and upload files or download and decrypt files.  Also can do all forms of S3 SSE.
 ___
-How this works is that it takes a file that you have uploaded via the ruby gem, fetches the key, decrypts the key with the appropriate EncryptionContext via KMS, then takes that key and unencrypts the key stored with the file, and then uses _that_ key to decrypt the file and save it in the location specified.
+## Decryption
+1. takes a file that you have uploaded via the ruby gem or this go program
+2. fetches the envelope key and decrypts the envelope key with the appropriate EncryptionContext via KMS
+3. then takes that key and unencrypts the data key stored with the file in metadata
+4. and then uses _that_ key to decrypt the file and save it in the location specified.
+
+## Encryption
+1. This takes the file,
+2. generates a KMS envelope key
+3. generates a local data encryption key
+4. encrypts the file with the data key
+5. encrypts the data key with the envelope key
+6. stores the encrypted envelope key in s3 with a (filename).key value
+7. stores the encrypted data key in the s3 metadata and uploads the encrypted file
 ___
+
 ## How to build:
-This tool requires the "aws-sdk-go" be installed.
+This tool requires the "aws-sdk-go" and the ["urfave/cli"](https://github.com/urfave/cli) packages be installed.
 ```
 go get github.com/aws/aws-sdk-go/
+go get github.com/urfave/cli"
 ```
 after this, you can build the tool.
 ```bash
-go build s3decrypt.go
-./s3decrypt 
-Usage: s3decrypt {localfilename} {remotefilename} {bucket} {context}
+go build -o s3encrypt
+./s3encrypt 
 ```
 
 
 Alternatively, if you have [glide](https://github.com/Masterminds/glide) installed, you can just clone the repo and build like so:
 ```
 glide up
-go build s3decrypt.go
+go build s3encrypt.go
 ```
