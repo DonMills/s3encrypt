@@ -1,4 +1,4 @@
-# go-kms-s3
+# s3encrypt
 A tool designed to work with the [ruby-kms-s3-gem](https://github.com/DonMills/ruby-kms-s3-gem).  
 Fully compatable with the gem - can encrypt and upload files or download and decrypt files.  Also can do all forms of S3 SSE.
 ___
@@ -19,20 +19,35 @@ ___
 ___
 
 ## How to build:
-This tool requires the "aws-sdk-go" and the ["urfave/cli"](https://github.com/urfave/cli) packages be installed.
+
+#### git clone into the $GOPATH/src/github.com/DonMills directory
+```
+mkdir $GOPATH/src/github.com/DonMills
+cd $GOPATH/src/github.com/DonMills
+git clone https://github.com/DonMills/s3encrypt.git
+```
+_or_
+```
+go get github.com/DonMills/s3encrypt
+```
+
+#### This tool requires the "aws-sdk-go" and the ["urfave/cli"](https://github.com/urfave/cli) packages be installed.
 ```
 go get github.com/aws/aws-sdk-go/
 go get github.com/urfave/cli"
 ```
-after this, you can build the tool.
+Alternatively, if you have [glide](https://github.com/Masterminds/glide) installed, you can just get the deps like this:
+```
+glide up
+```
+
+#### Then just build or install it...
+```
+go install
+```
+_or_
 ```bash
 go build -o s3encrypt
 ./s3encrypt 
 ```
 
-
-Alternatively, if you have [glide](https://github.com/Masterminds/glide) installed, you can just clone the repo and build like so:
-```
-glide up
-go build s3encrypt.go
-```
