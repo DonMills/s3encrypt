@@ -8,7 +8,7 @@ import (
 func TestEncryptDecryptCBCOne(t *testing.T) {
 	data := []byte("Test String one")
 	fmt.Printf("Original Data: %s\n", string(data))
-	key := generatedatakey()
+	key := GenerateDataKey()
 	ctext, iv := EncryptFile(data, key)
 	result := DecryptFile(ctext, iv, key)
 	fmt.Printf("Decrypted Data: %s\n", string(result))
@@ -20,7 +20,7 @@ func TestEncryptDecryptCBCOne(t *testing.T) {
 func TestEncryptDecryptCBCTwo(t *testing.T) {
 	data := []byte("abcd1234efgh5678")
 	fmt.Printf("Original Data: %s\n", string(data))
-	key := generatedatakey()
+	key := GenerateDataKey()
 	ctext, iv := EncryptFile(data, key)
 	result := DecryptFile(ctext, iv, key)
 	fmt.Printf("Decrypted Data: %s\n", string(result))
@@ -31,7 +31,7 @@ func TestEncryptDecryptCBCTwo(t *testing.T) {
 func TestEncryptDecryptECBOne(t *testing.T) {
 	data := []byte("Test data string dos")
 	fmt.Printf("Original Data: %s\n", string(data))
-	key := generatedatakey()
+	key := GenerateDataKey()
 	ctext := ECBEncrypt(data, key)
 	result := ECBDecrypt(ctext, key)
 	fmt.Printf("Decrypted Data: %s\n", string(result))
@@ -42,7 +42,7 @@ func TestEncryptDecryptECBOne(t *testing.T) {
 func TestEncryptDecryptECBTwo(t *testing.T) {
 	data := []byte("abcd1234efgh5678")
 	fmt.Printf("Original Data: %s\n", string(data))
-	key := generatedatakey()
+	key := GenerateDataKey()
 	ctext := ECBEncrypt(data, key)
 	result := ECBDecrypt(ctext, key)
 	fmt.Printf("Decrypted Data: %s\n", string(result))

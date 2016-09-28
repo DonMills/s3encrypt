@@ -99,8 +99,8 @@ func EncryptFile(data []byte, key []byte) ([]byte, []byte) {
 	return ciphertext, iv
 }
 
-// generatedatakey Does what's on the tin, generates the data encryption key
-func generatedatakey() []byte {
+// GenerateDataKey Does what's on the tin, generates the data encryption key
+func GenerateDataKey() []byte {
 	key := make([]byte, 16)
 	_, err := rand.Read(key)
 	if err != nil {

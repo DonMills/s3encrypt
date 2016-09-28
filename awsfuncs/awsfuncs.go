@@ -80,7 +80,7 @@ func decryptkey(output []byte, context string) []byte {
 	return plainkey.Plaintext
 }
 
-//PutEncKey places the encrypted key in AWS S3.
+//PutEncKey places the encrypted envelope key in AWS S3.
 func PutEncKey(key []byte, remfilename string, bucket string, sse string) {
 	var params *s3.PutObjectInput
 
@@ -133,18 +133,26 @@ func FetchFile(remfilename string, bucket string) ([]byte, []byte, []byte) {
 }
 
 //PutEncFile encrypts and uploads the file with the proper metadata
-func PutEncFile(filedata []byte, remfilename string, bucket string, sse string) {
+func PutEncFile(filedata []byte, remfilename string, bucket string, iv []byte, cryptdatakey []byte, sse string) {
 	var params *s3.PutObjectInput
 
-	//	encodelen := base64.StdEncoding.EncodedLen(len(key))
-	//enckey := make([]byte, encodelen)
-	//base64.StdEncoding.Encode(enckey, key)
+	encodeivlen := base64.StdEncoding.EncodedLen(len(iv))
+	enciv := make([]byte, encodeivlen)
+	base64.StdEncoding.Encode(enciv, iv)
+
+	encodecdklen := base64.StdEncoding.EncodedLen(len(cryptdatakey))
+	enccdk := make([]byte, encodecdklen)
+	base64.StdEncoding.Encode(enccdk, cryptdatakey)
 
 	if sse != "nil" {
 		params = &s3.PutObjectInput{
-			Bucket:               aws.String(bucket),      // Required
-			Key:                  aws.String(remfilename), // Required
-			Body:                 bytes.NewReader(filedata),
+			Bucket: aws.String(bucket),      // Required
+			Key:    aws.String(remfilename), // Required
+			Body:   bytes.NewReader(filedata),
+			Metadata: map[string]*string{
+				"X-Amz-Iv":  aws.String(string(enciv)),
+				"X-Amz-Key": aws.String(string(enccdk)),
+			},
 			ServerSideEncryption: aws.String(sse),
 		}
 	} else {
@@ -152,6 +160,10 @@ func PutEncFile(filedata []byte, remfilename string, bucket string, sse string) 
 			Bucket: aws.String(bucket),      // Required
 			Key:    aws.String(remfilename), // Required
 			Body:   bytes.NewReader(filedata),
+			Metadata: map[string]*string{
+				"X-Amz-Iv":  aws.String(string(enciv)),
+				"X-Amz-Key": aws.String(string(enccdk)),
+			},
 		}
 	}
 	_, err := s3svc.PutObject(params)

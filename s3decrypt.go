@@ -3,6 +3,7 @@ package main
 import (
 	"DonMills/go-kms-s3/awsfuncs"
 	"DonMills/go-kms-s3/encryption"
+	"DonMills/go-kms-s3/errorhandle"
 
 	"fmt"
 	"io/ioutil"
@@ -19,12 +20,27 @@ func decrypt(localfilename string, remfilename string, bucket string, context st
 	result := encryption.DecryptFile(file, iv, s3finalkey)
 	err := ioutil.WriteFile(localfilename, result, 0644)
 	if err != nil {
-		fmt.Println(err.Error())
-		os.Exit(1)
+		errorhandle.GenError(err)
 	}
 }
 
+func encrypt(localfilename string, remfilename string, bucket string, context string, sse string, cmkID string) {
+	filedata, err := ioutil.ReadFile(localfilename)
+	if err != nil {
+		errorhandle.GenError(err)
+	}
+	cipherenvkey, plainenvkey := awsfuncs.GenerateEnvKey(cmkID, context)
+	awsfuncs.PutEncKey(cipherenvkey, remfilename, bucket, sse)
+	datakey := encryption.GenerateDataKey()
+	ciphertext, iv := encryption.EncryptFile(filedata, datakey)
+	cryptdatakey := encryption.ECBEncrypt(datakey, plainenvkey)
+	awsfuncs.PutEncFile(ciphertext, remfilename, bucket, iv, cryptdatakey, sse)
+}
+
 func main() {
+	var sse string
+	var cmkID string
+
 	app := cli.NewApp()
 	app.Name = "s3encrypt"
 	app.Usage = "Send and receive encrypted files in S3"
@@ -51,6 +67,35 @@ func main() {
 					os.Exit(1)
 				} else {
 					decrypt(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3))
+				}
+				return nil
+			},
+		},
+		{
+			Name:      "encrypt",
+			Aliases:   []string{"e"},
+			Usage:     "Fetch and decrypt a file from S3",
+			ArgsUsage: "[localfilename] [remotefilename] [bucket] [context]",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:        "c",
+					Usage:       "The customer master key id - can set with S3ENCRYPT_CMKID environment variable",
+					EnvVar:      "S3ENCRYPT_CMKID",
+					Destination: &cmkID,
+				},
+				cli.StringFlag{
+					Name:        "s",
+					Usage:       "The ServerSideEncryption method to use - defaults to none",
+					Value:       "nil",
+					Destination: &sse,
+				},
+			},
+			Action: func(c *cli.Context) error {
+				if len(c.Args()) < 4 {
+					fmt.Println("Usage: s3decrypt encrypt [localfilename] [remotefilename] [bucket] [context] -c [customermasterkey] -s [AES_256|aws:kms]")
+					os.Exit(1)
+				} else {
+					encrypt(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3), sse, cmkID)
 				}
 				return nil
 			},
