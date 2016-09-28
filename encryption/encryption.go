@@ -2,8 +2,8 @@
 package encryption
 
 import (
-	"DonMills/s3encrypt/errorhandle"
-	"DonMills/s3encrypt/padding"
+	"github.com/DonMills/s3encrypt/errorhandle"
+	"github.com/DonMills/s3encrypt/padding"
 
 	"crypto/aes"
 	"crypto/cipher"

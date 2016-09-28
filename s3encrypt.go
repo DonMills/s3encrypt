@@ -1,9 +1,9 @@
 package main
 
 import (
-	"DonMills/s3encrypt/awsfuncs"
-	"DonMills/s3encrypt/encryption"
-	"DonMills/s3encrypt/errorhandle"
+	"github.com/DonMills/s3encrypt/awsfuncs"
+	"github.com/DonMills/s3encrypt/encryption"
+	"github.com/DonMills/s3encrypt/errorhandle"
 
 	"fmt"
 	"io/ioutil"
@@ -47,7 +47,7 @@ func main() {
 	app.HelpName = "s3encrypt"
 	app.UsageText = "s3encrypt [command] {command specific options}"
 	app.ArgsUsage = "s3encrypt [command]"
-	app.Version = "0.8"
+	app.Version = "1.0rc"
 	app.Compiled = time.Now()
 	app.Authors = []cli.Author{
 		cli.Author{

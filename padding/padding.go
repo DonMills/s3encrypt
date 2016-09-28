@@ -2,7 +2,7 @@
 package padding
 
 import (
-	"DonMills/s3encrypt/errorhandle"
+	"github.com/DonMills/s3encrypt/errorhandle"
 
 	"crypto/aes"
 	"errors"

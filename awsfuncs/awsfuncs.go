@@ -2,8 +2,8 @@
 package awsfuncs
 
 import (
-	"DonMills/s3encrypt/encryption"
-	"DonMills/s3encrypt/errorhandle"
+	"github.com/DonMills/s3encrypt/encryption"
+	"github.com/DonMills/s3encrypt/errorhandle"
 
 	"bytes"
 	"encoding/base64"
