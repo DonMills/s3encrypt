@@ -16,6 +16,7 @@ ___
 5. encrypts the data key with the envelope key
 6. stores the encrypted envelope key in s3 with a (filename).key value
 7. stores the encrypted data key in the s3 metadata and uploads the encrypted file
+
 ___
 
 ## How to build:
