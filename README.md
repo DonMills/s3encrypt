@@ -67,3 +67,8 @@ or
 ```
 s3encrypt decrypt [localfilename] [remotefilename] [bucket] [context]
 ```
+## Mac installation via homebrew
+New!  Now you can install on a mac by using homebrew.
+```
+brew install DonMills/tools/s3encrypt
+```
