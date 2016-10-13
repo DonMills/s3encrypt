@@ -10,7 +10,7 @@ ___
 
 ## Encryption
 1. This takes the file,
-2. generates a KMS envelope key
+2. generates a KMS envelope key tied to a supplied EncryptionContext value
 3. generates a local data encryption key
 4. encrypts the file with the data key
 5. encrypts the data key with the envelope key
@@ -35,7 +35,7 @@ go get github.com/DonMills/s3encrypt
 #### This tool requires the "aws-sdk-go" and the ["urfave/cli"](https://github.com/urfave/cli) packages be installed.
 ```
 go get github.com/aws/aws-sdk-go/
-go get github.com/urfave/cli"
+go get github.com/urfave/cli
 ```
 Alternatively, if you have [glide](https://github.com/Masterminds/glide) installed, you can just get the deps like this:
 ```
