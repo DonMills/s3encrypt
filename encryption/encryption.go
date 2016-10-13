@@ -20,7 +20,7 @@ var BlockSize = aes.BlockSize
 func ECBDecrypt(ciphertext []byte, key []byte) []byte {
 	cipher, err := aes.NewCipher(key)
 	if err != nil {
-		errorhandle.GenError(errors.New("ECBEncrypt - There was a cipher initialization error"))
+		errorhandle.GenError(errors.New("ECBDecrypt - There was a cipher initialization error"))
 	}
 	bs := aes.BlockSize
 	if len(ciphertext)%bs != 0 {
