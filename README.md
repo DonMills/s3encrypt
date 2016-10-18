@@ -67,14 +67,15 @@ or
 ```
 s3encrypt decrypt [localfilename] [remotefilename] [bucket] [context]
 ```
-## Mac installation via homebrew
-New!  Now you can install on a mac by using homebrew.
-```
-brew install DonMills/tools/s3encrypt
-```
-### Dealing with an "AWS Error: NoCredentialProviders" error or needing ~/.aws/config
+#### Dealing with an "AWS Error: NoCredentialProviders" error or needing ~/.aws/config
 In some situations (like needing a STS token to work on an environment) or if you have entries in your ~/.aws/config file that are needed, you may need to set the following environment variable:
 ```
 AWS_SDK_LOAD_CONFIG=1
 ```
 This is a function of the aws sdk for go discussed here: http://docs.aws.amazon.com/sdk-for-go/api/aws/session/
+## Mac installation via homebrew
+New!  Now you can install on a mac by using homebrew.
+```
+brew install DonMills/tools/s3encrypt
+```
+
