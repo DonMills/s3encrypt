@@ -77,4 +77,4 @@ In some situations (like needing a STS token to work on an environment) or if yo
 ```
 AWS_SDK_LOAD_CONFIG=1
 ```
-This is a function of the aws sdk for go.
+This is a function of the aws sdk for go discussed here: http://docs.aws.amazon.com/sdk-for-go/api/aws/session/
