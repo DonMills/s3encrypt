@@ -72,7 +72,7 @@ New!  Now you can install on a mac by using homebrew.
 ```
 brew install DonMills/tools/s3encrypt
 ```
-### Dealing with the "AWS Error: NoCredentialProviders" error or needing ~/.aws/config
+### Dealing with an "AWS Error: NoCredentialProviders" error or needing ~/.aws/config
 In some situations (like needing a STS token to work on an environment) or if you have entries in your ~/.aws/config file that are needed, you may need to set the following environment variable:
 ```
 AWS_SDK_LOAD_CONFIG=1
