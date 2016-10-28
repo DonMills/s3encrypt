@@ -63,7 +63,7 @@ func main() {
 			ArgsUsage: "[localfilename] [remotefilename] [bucket] [context]",
 			Action: func(c *cli.Context) error {
 				if len(c.Args()) < 4 {
-					fmt.Println("Usage: s3decrypt decrypt [localfilename] [remotefilename] [bucket] [context]")
+					fmt.Println("Usage: s3encrypt decrypt [localfilename] [remotefilename] [bucket] [context]")
 					os.Exit(1)
 				} else {
 					decrypt(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3))
@@ -92,7 +92,7 @@ func main() {
 			},
 			Action: func(c *cli.Context) error {
 				if len(c.Args()) < 4 {
-					fmt.Println("Usage: s3decrypt encrypt [localfilename] [remotefilename] [bucket] [context] -c [customermasterkey] -s [AES256|aws:kms]")
+					fmt.Println("Usage: s3encrypt encrypt [localfilename] [remotefilename] [bucket] [context] -c [customermasterkey] -s [AES256|aws:kms]")
 					os.Exit(1)
 				} else {
 					encrypt(c.Args().Get(0), c.Args().Get(1), c.Args().Get(2), c.Args().Get(3), sse, cmkID)
