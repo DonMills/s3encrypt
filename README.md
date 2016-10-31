@@ -1,6 +1,11 @@
 # s3encrypt
 A tool designed to work with the [ruby-kms-s3-gem](https://github.com/DonMills/ruby-kms-s3-gem).  
 Fully compatable with the gem - can encrypt and upload files or download and decrypt files.  Also can do all forms of S3 SSE.
+
+#### New: KMSencrypt
+Like the concept of S3encrypt but wish it didn't use S3?  Want to use KMS generated keys to encrypt files for local storage, email, or other places like github?  Well, here you go:
+
+https://github.com/DonMills/kmsencrypt
 ___
 ## Decryption
 1. takes a file that you have uploaded via the ruby gem or this go program
