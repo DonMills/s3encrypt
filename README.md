@@ -1,3 +1,4 @@
+[![Go Report Card](https://goreportcard.com/badge/github.com/donmills/s3encrypt)](https://goreportcard.com/report/github.com/donmills/s3encrypt)
 # s3encrypt
 A tool designed to work with the [ruby-kms-s3-gem](https://github.com/DonMills/ruby-kms-s3-gem).  
 Fully compatable with the gem - can encrypt and upload files or download and decrypt files.  Also can do all forms of S3 SSE.
