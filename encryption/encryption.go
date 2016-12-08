@@ -69,7 +69,7 @@ func ECBEncrypt(plaintext []byte, key []byte) []byte {
 }
 
 // DecryptFile This function uses the decrypted data encryption key and the
-// retrived IV from the S3 metadata to decrypt the data file
+// retrieved IV from the S3 metadata to decrypt the data file
 func DecryptFile(data []byte, iv []byte, key []byte) []byte {
 	block, err := aes.NewCipher(key)
 	if err != nil {
